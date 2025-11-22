@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Solitaire</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Panda Solitaire</h1>
+            <div class="score-board">Score: <span id="score">0</span></div>
+        </header>
+        
+        <div class="game-board">
+            <div class="top-row">
+                <div class="stock-pile" id="stock"></div>
+                <div class="waste-pile" id="waste"></div>
+                <div class="spacer"></div>
+                <div class="foundation" id="foundation-1" data-suit="hearts"></div>
+                <div class="foundation" id="foundation-2" data-suit="diamonds"></div>
+                <div class="foundation" id="foundation-3" data-suit="clubs"></div>
+                <div class="foundation" id="foundation-4" data-suit="spades"></div>
+            </div>
+            
+            <div class="tableau-row">
+                <div class="tableau" id="tableau-1"></div>
+                <div class="tableau" id="tableau-2"></div>
+                <div class="tableau" id="tableau-3"></div>
+                <div class="tableau" id="tableau-4"></div>
+                <div class="tableau" id="tableau-5"></div>
+                <div class="tableau" id="tableau-6"></div>
+                <div class="tableau" id="tableau-7"></div>
+            </div>
+        </div>
+
+        <div class="mascot-container">
+            <img src="pandasann.png" alt="Cheering Panda" class="mascot">
+            <div class="speech-bubble">がんばって！</div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

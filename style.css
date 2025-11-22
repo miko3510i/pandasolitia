@@ -1,0 +1,199 @@
+:root {
+    --bg-color: #f0f8ff;
+    --primary-color: #ffb7b2; /* Pastel Pink */
+    --secondary-color: #b5ead7; /* Pastel Green */
+    --accent-color: #ff9aa2;
+    --text-color: #555;
+    --card-width: 80px;
+    --card-height: 112px;
+    --card-gap: 10px;
+}
+
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0;
+    color: var(--accent-color);
+    font-size: 24px;
+}
+
+.score-board {
+    font-size: 18px;
+    font-weight: bold;
+    background-color: white;
+    padding: 5px 15px;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.game-board {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.top-row, .tableau-row {
+    display: flex;
+    gap: var(--card-gap);
+    justify-content: space-between;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+/* Card Placeholders */
+.stock-pile, .waste-pile, .foundation, .tableau {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px dashed #ccc;
+    position: relative;
+}
+
+.tableau {
+    border: none;
+    background-color: transparent;
+    height: auto;
+    min-height: var(--card-height);
+}
+
+/* Card Styling */
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px;
+    box-sizing: border-box;
+    font-weight: bold;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.1s;
+}
+
+.card:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+    z-index: 1000 !important;
+}
+
+.card.red { color: #ff6b6b; }
+.card.black { color: #444; }
+
+.card-top, .card-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.card-bottom {
+    transform: rotate(180deg);
+}
+
+.card-center {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+/* Face Cards with Panda */
+.card[data-rank="11"] .card-center,
+.card[data-rank="12"] .card-center,
+.card[data-rank="13"] .card-center {
+    background-image: url('pandasann.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 0; /* Hide text suit */
+}
+
+/* Card Back */
+.card.back {
+    background-color: var(--primary-color);
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.2),
+        rgba(255,255,255,0.2) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    border: 2px solid white;
+}
+
+.card.back * {
+    display: none;
+}
+
+/* Mascot */
+.mascot-container {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 120px;
+    pointer-events: none;
+}
+
+.mascot {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+}
+
+.speech-bubble {
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 20px;
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: white transparent;
+}
