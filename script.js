@@ -243,6 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('touchmove', onDrag);
         document.removeEventListener('touchend', onDragEnd);
 
+        // Get clone rect before removing
+        const cloneRect = dragClone.getBoundingClientRect();
+
         // Remove clone
         if (dragClone) {
             dragClone.remove();
@@ -254,20 +257,54 @@ document.addEventListener('DOMContentLoaded', () => {
             dragSource.style.opacity = '1';
         }
 
-        // Hit testing
-        const clientX = e.type === 'touchend' ? e.changedTouches[0].clientX : e.clientX;
-        const clientY = e.type === 'touchend' ? e.changedTouches[0].clientY : e.clientY;
+        // Find best drop target based on intersection area
+        const potentialTargets = document.querySelectorAll('.tableau, .foundation');
+        let bestTarget = null;
+        let maxOverlapArea = 0;
 
-        // We need to find what element is under the mouse
-        // Since clone has pointer-events: none, we can use elementFromPoint
-        // For touch, we might need to be careful if the finger covers the target, but usually elementFromPoint works well enough
-        const dropTarget = document.elementFromPoint(clientX, clientY);
+        potentialTargets.forEach(target => {
+            const targetRect = target.getBoundingClientRect();
 
-        if (dropTarget) {
-            const pileEl = dropTarget.closest('.tableau, .foundation');
-            if (pileEl) {
-                handleDrop(pileEl);
+            // Calculate intersection
+            const intersectionX = Math.max(0, Math.min(cloneRect.right, targetRect.right) - Math.max(cloneRect.left, targetRect.left));
+            const intersectionY = Math.max(0, Math.min(cloneRect.bottom, targetRect.bottom) - Math.max(cloneRect.top, targetRect.top));
+            const overlapArea = intersectionX * intersectionY;
+
+            if (overlapArea > 0 && overlapArea > maxOverlapArea) {
+                maxOverlapArea = overlapArea;
+                bestTarget = target;
             }
+        });
+
+        // Also check if we are "close enough" even if not strictly overlapping (e.g. just released near it)
+        // But for now, let's stick to overlap as it's much better than point. 
+        // If no overlap, we could check distance to centers.
+
+        if (!bestTarget) {
+            // Fallback: check distance to center if no overlap (very loose)
+            let minDistance = Infinity;
+            potentialTargets.forEach(target => {
+                const targetRect = target.getBoundingClientRect();
+                const targetCenter = {
+                    x: targetRect.left + targetRect.width / 2,
+                    y: targetRect.top + targetRect.height / 2
+                };
+                const cloneCenter = {
+                    x: cloneRect.left + cloneRect.width / 2,
+                    y: cloneRect.top + cloneRect.height / 2
+                };
+
+                const dist = Math.hypot(targetCenter.x - cloneCenter.x, targetCenter.y - cloneCenter.y);
+                // Threshold: e.g. within 100px
+                if (dist < 100 && dist < minDistance) {
+                    minDistance = dist;
+                    bestTarget = target;
+                }
+            });
+        }
+
+        if (bestTarget) {
+            handleDrop(bestTarget);
         }
 
         draggedCard = null;
@@ -332,12 +369,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // The order in HTML is: hearts, diamonds, clubs, spades
                 const suitOrder = ['hearts', 'diamonds', 'clubs', 'spades'];
                 const correctIndex = suitOrder.indexOf(movingCard.suit);
-                
+
                 if (correctIndex !== -1) {
                     // Redirect to the correct pile
                     to.index = correctIndex;
                     targetPile = state.foundations[to.index];
-                    
+
                     if (targetPile.length === 0) {
                         if (movingCard.rank === 1) isValid = true;
                     } else {
