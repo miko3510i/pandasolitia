@@ -328,13 +328,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (to.type === 'foundation') {
             // Can only move one card to foundation
             if (cardsToMove.length === 1) {
-                targetPile = state.foundations[to.index];
-                const targetSuit = ['hearts', 'diamonds', 'clubs', 'spades'][to.index]; // Fixed suits based on ID logic in HTML?
-                // Actually HTML IDs are foundation-1..4, let's check data-suit
-                const foundationEl = document.getElementById(`foundation-${to.index + 1}`);
-                const requiredSuit = foundationEl.dataset.suit;
-
-                if (movingCard.suit === requiredSuit) {
+                // Find the correct foundation index for this card's suit
+                // The order in HTML is: hearts, diamonds, clubs, spades
+                const suitOrder = ['hearts', 'diamonds', 'clubs', 'spades'];
+                const correctIndex = suitOrder.indexOf(movingCard.suit);
+                
+                if (correctIndex !== -1) {
+                    // Redirect to the correct pile
+                    to.index = correctIndex;
+                    targetPile = state.foundations[to.index];
+                    
                     if (targetPile.length === 0) {
                         if (movingCard.rank === 1) isValid = true;
                     } else {
