@@ -263,7 +263,30 @@ document.addEventListener('DOMContentLoaded', () => {
         let maxOverlapArea = 0;
 
         potentialTargets.forEach(target => {
-            const targetRect = target.getBoundingClientRect();
+            let targetRect = target.getBoundingClientRect();
+
+            // Expand tableau rect to include all cards
+            if (target.classList.contains('tableau')) {
+                const pileIndex = parseInt(target.id.split('-')[1]) - 1;
+                const pile = state.tableau[pileIndex];
+                if (pile && pile.length > 0) {
+                    // Each card adds ~30px (see renderGame)
+                    // Base height is card height (112px or var(--card-height))
+                    // Let's approximate expansion
+                    const extraHeight = (pile.length - 1) * 30;
+
+                    // Create a new rect with expanded height
+                    // We can't modify DOMRect directly, so we use a plain object
+                    targetRect = {
+                        left: targetRect.left,
+                        right: targetRect.right,
+                        top: targetRect.top,
+                        bottom: targetRect.bottom + extraHeight,
+                        width: targetRect.width,
+                        height: targetRect.height + extraHeight
+                    };
+                }
+            }
 
             // Calculate intersection
             const intersectionX = Math.max(0, Math.min(cloneRect.right, targetRect.right) - Math.max(cloneRect.left, targetRect.left));
