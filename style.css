@@ -1,7 +1,9 @@
 :root {
     --bg-color: #f0f8ff;
-    --primary-color: #ffb7b2; /* Pastel Pink */
-    --secondary-color: #b5ead7; /* Pastel Green */
+    --primary-color: #ffb7b2;
+    /* Pastel Pink */
+    --secondary-color: #b5ead7;
+    /* Pastel Green */
     --accent-color: #ff9aa2;
     --text-color: #555;
     --card-width: 80px;
@@ -28,7 +30,7 @@ body {
     padding: 20px;
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 header {
@@ -50,7 +52,7 @@ h1 {
     background-color: white;
     padding: 5px 15px;
     border-radius: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .game-board {
@@ -59,7 +61,8 @@ h1 {
     gap: 20px;
 }
 
-.top-row, .tableau-row {
+.top-row,
+.tableau-row {
     display: flex;
     gap: var(--card-gap);
     justify-content: space-between;
@@ -70,7 +73,10 @@ h1 {
 }
 
 /* Card Placeholders */
-.stock-pile, .waste-pile, .foundation, .tableau {
+.stock-pile,
+.waste-pile,
+.foundation,
+.tableau {
     width: var(--card-width);
     height: var(--card-height);
     border-radius: 8px;
@@ -92,7 +98,7 @@ h1 {
     height: var(--card-height);
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -111,10 +117,16 @@ h1 {
     z-index: 1000 !important;
 }
 
-.card.red { color: #ff6b6b; }
-.card.black { color: #444; }
+.card.red {
+    color: #ff6b6b;
+}
 
-.card-top, .card-bottom {
+.card.black {
+    color: #444;
+}
+
+.card-top,
+.card-bottom {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -142,19 +154,18 @@ h1 {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    font-size: 0; /* Hide text suit */
+    font-size: 0;
+    /* Hide text suit */
 }
 
 /* Card Back */
 .card.back {
     background-color: var(--primary-color);
-    background-image: repeating-linear-gradient(
-        45deg,
-        rgba(255,255,255,0.2),
-        rgba(255,255,255,0.2) 10px,
-        transparent 10px,
-        transparent 20px
-    );
+    background-image: repeating-linear-gradient(45deg,
+            rgba(255, 255, 255, 0.2),
+            rgba(255, 255, 255, 0.2) 10px,
+            transparent 10px,
+            transparent 20px);
     border: 2px solid white;
 }
 
@@ -162,38 +173,112 @@ h1 {
     display: none;
 }
 
+/* Empty Stock Placeholder */
+.card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    color: var(--accent-color);
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.card-placeholder::after {
+    content: '↻';
+    /* Reload icon */
+}
+
+.card-placeholder:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
 /* Mascot */
 .mascot-container {
-    position: absolute;
-    bottom: -10px;
-    right: -10px;
-    width: 120px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    /* Larger size */
     pointer-events: none;
+    z-index: -1;
+    /* Behind everything */
+    opacity: 0.6;
+    /* Watermark style */
+    padding: 20px;
 }
 
 .mascot {
     width: 100%;
     height: auto;
-    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
 }
 
 .speech-bubble {
     position: absolute;
-    top: -40px;
-    right: 20px;
+    top: -20px;
+    left: 40px;
+    /* Adjust for left alignment */
+    right: auto;
     background-color: white;
     padding: 5px 10px;
     border-radius: 10px;
     font-size: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    z-index: 2;
+    /* Bubble above panda */
 }
 
 .speech-bubble::after {
     content: '';
     position: absolute;
     bottom: -5px;
-    right: 20px;
+    left: 20px;
+    /* Adjust arrow */
+    right: auto;
     border-width: 5px 5px 0;
     border-style: solid;
     border-color: white transparent;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    :root {
+        --card-width: 45px;
+        --card-height: 63px;
+        --card-gap: 5px;
+    }
+
+    .game-container {
+        padding: 10px;
+        max-width: 100%;
+        border-radius: 0;
+        height: 100vh;
+        box-sizing: border-box;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    .score-board {
+        font-size: 14px;
+    }
+
+    .mascot-container {
+        width: 100px;
+        /* Smaller on mobile */
+        bottom: 0;
+        left: 0;
+        opacity: 0.5;
+        /* Fainter on mobile to avoid distraction */
+    }
+
+    .speech-bubble {
+        display: none;
+        /* Hide speech bubble on small screens to save space */
+    }
 }

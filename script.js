@@ -166,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetStock() {
         if (state.stock.length === 0 && state.waste.length > 0) {
+            // Reverse waste to become new stock
             state.stock = state.waste.reverse().map(c => ({ ...c, faceUp: false }));
             state.waste = [];
             renderGame();
@@ -181,19 +182,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function makeDraggable(element, source, pileIndex, cardIndex = null) {
         element.addEventListener('mousedown', (e) => onDragStart(e, element, source, pileIndex, cardIndex));
+        element.addEventListener('touchstart', (e) => onDragStart(e, element, source, pileIndex, cardIndex), { passive: false });
     }
 
     function onDragStart(e, element, source, pileIndex, cardIndex) {
-        if (e.button !== 0) return; // Only left click
-        e.preventDefault();
+        if (e.type === 'mousedown' && e.button !== 0) return; // Only left click
+        e.preventDefault(); // Prevent scrolling on touch
+
+        const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
         draggedCard = { source, pileIndex, cardIndex };
         dragSource = element;
 
         // Calculate offset
         const rect = element.getBoundingClientRect();
-        dragOffset.x = e.clientX - rect.left;
-        dragOffset.y = e.clientY - rect.top;
+        dragOffset.x = clientX - rect.left;
+        dragOffset.y = clientY - rect.top;
         originalPosition.x = rect.left;
         originalPosition.y = rect.top;
 
@@ -206,17 +211,27 @@ document.addEventListener('DOMContentLoaded', () => {
         dragClone.style.pointerEvents = 'none'; // Allow events to pass through to underlying elements
         document.body.appendChild(dragClone);
 
-        // Hide original temporarily (optional, or just keep it)
+        // Hide original temporarily
         element.style.opacity = '0.5';
 
-        document.addEventListener('mousemove', onDrag);
-        document.addEventListener('mouseup', onDragEnd);
+        if (e.type === 'mousedown') {
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', onDragEnd);
+        } else {
+            document.addEventListener('touchmove', onDrag, { passive: false });
+            document.addEventListener('touchend', onDragEnd);
+        }
     }
 
     function onDrag(e) {
         if (!dragClone) return;
-        dragClone.style.left = `${e.clientX - dragOffset.x}px`;
-        dragClone.style.top = `${e.clientY - dragOffset.y}px`;
+        e.preventDefault(); // Prevent scrolling
+
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+        dragClone.style.left = `${clientX - dragOffset.x}px`;
+        dragClone.style.top = `${clientY - dragOffset.y}px`;
     }
 
     function onDragEnd(e) {
@@ -225,6 +240,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Remove listeners
         document.removeEventListener('mousemove', onDrag);
         document.removeEventListener('mouseup', onDragEnd);
+        document.removeEventListener('touchmove', onDrag);
+        document.removeEventListener('touchend', onDragEnd);
 
         // Remove clone
         if (dragClone) {
@@ -238,13 +255,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Hit testing
+        const clientX = e.type === 'touchend' ? e.changedTouches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchend' ? e.changedTouches[0].clientY : e.clientY;
+
         // We need to find what element is under the mouse
         // Since clone has pointer-events: none, we can use elementFromPoint
-        const dropTarget = document.elementFromPoint(e.clientX, e.clientY);
-        const pileEl = dropTarget.closest('.tableau, .foundation');
+        // For touch, we might need to be careful if the finger covers the target, but usually elementFromPoint works well enough
+        const dropTarget = document.elementFromPoint(clientX, clientY);
 
-        if (pileEl) {
-            handleDrop(pileEl);
+        if (dropTarget) {
+            const pileEl = dropTarget.closest('.tableau, .foundation');
+            if (pileEl) {
+                handleDrop(pileEl);
+            }
         }
 
         draggedCard = null;
