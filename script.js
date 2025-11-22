@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         waste: [],
         foundations: [[], [], [], []],
         tableau: [[], [], [], [], [], [], []],
-        score: 0
+        score: 1000
     };
 
     // Card Configuration
@@ -419,20 +419,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     const newTop = state.tableau[from.pileIndex][state.tableau[from.pileIndex].length - 1];
                     if (!newTop.faceUp) {
                         newTop.faceUp = true;
-                        state.score += 5; // Score for flipping card
                     }
                 }
             } else if (from.source === 'foundation') {
                 state.foundations[from.pileIndex].pop();
-                state.score = Math.max(0, state.score - 10); // Penalty for moving back? Or just neutral.
             }
 
             if (to.type === 'tableau') {
                 state.tableau[to.index].push(...cardsToMove);
             } else if (to.type === 'foundation') {
                 state.foundations[to.index].push(cardsToMove[0]);
-                state.score += 10; // Score for foundation
             }
+
+            // Decrease score for any move
+            state.score = Math.max(0, state.score - 1);
 
             renderGame();
             checkWin();
